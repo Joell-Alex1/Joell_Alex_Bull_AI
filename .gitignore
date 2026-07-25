@@ -1,0 +1,6 @@
+.env
+__pycache__/
+*.pyc
+generated_reports/
+output_report.pdf
+output_preview.html

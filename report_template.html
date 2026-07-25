@@ -1,0 +1,874 @@
+<!-- Geojit Equity Research Report Template (Jinja2 + WeasyPrint) -->
+<style>
+  @page {
+    size: A4;
+    margin: 0;
+  }
+  @page :first {
+    margin: 0;
+  }
+
+  :root {
+    --teal-dark: #0b5c59;
+    --teal: #12796f;
+    --teal-mid: #1a9a90;
+    --teal-light: #e6f2f1;
+    --teal-table-head: #12796f;
+    --border-grey: #cfd8d6;
+    --text-dark: #1e2b2a;
+    --text-grey: #4a4a4a;
+    --red: #c0392b;
+    --green: #1e8449;
+    --orange: #e07b1f;
+    --bg-stripe: #f2f7f6;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: 'Arial', 'Helvetica Neue', sans-serif;
+    color: var(--text-dark);
+    font-size: 8.4pt;
+    line-height: 1.25;
+    margin: 0;
+    padding: 0;
+  }
+
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 7mm 12mm 9mm 12mm;
+    position: relative;
+    page-break-after: always;
+  }
+  .page:last-child { page-break-after: auto; }
+
+  /* ---------- Footer ---------- */
+  .footer-bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--teal-dark);
+    color: #fff;
+    text-align: center;
+    font-size: 8pt;
+    padding: 4px 0;
+  }
+
+  /* ---------- Sidebar ribbon (page 1) ---------- */
+  /* Rendered as inline SVG rather than CSS writing-mode+transform: WeasyPrint
+     mis-clips vertical-rl text rotated via CSS transform (glyphs paint outside
+     the parent's overflow:hidden box). SVG text rotation uses a different,
+     reliable rendering path. */
+  .side-ribbon {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 9mm;
+    height: 90mm;
+    background: var(--teal-dark);
+    overflow: hidden;
+  }
+  .side-ribbon svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ---------- Header row: logo + brand ---------- */
+  .brand-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2mm;
+  }
+  .brand-header .title-block h1 {
+    color: var(--teal);
+    font-size: 15pt;
+    margin: 0 0 1mm 0;
+    font-weight: bold;
+  }
+  .brand-header .title-block .subtitle {
+    font-size: 9pt;
+    color: var(--text-grey);
+    margin: 0;
+  }
+  .brand-logo {
+    text-align: right;
+  }
+  .brand-logo img {
+    height: 9mm;
+  }
+  .brand-logo .tagline {
+    font-size: 6.5pt;
+    color: var(--text-grey);
+    margin-top: 1mm;
+  }
+
+  .company-name-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-top: 2px solid var(--teal-dark);
+    padding-top: 1.5mm;
+    margin-bottom: 1.5mm;
+  }
+  .company-name-row h2 {
+    font-size: 16pt;
+    margin: 0;
+    color: var(--text-dark);
+  }
+  .company-name-row .report-date {
+    font-size: 8.5pt;
+    color: var(--text-grey);
+  }
+
+  .sector-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 8.5pt;
+    margin-bottom: 1.5mm;
+  }
+
+  /* ---------- Key changes / rating box ---------- */
+  .key-changes-box {
+    display: flex;
+    border: 1px solid var(--border-grey);
+    margin-bottom: 1.5mm;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .key-changes-left {
+    flex: 1.5;
+    padding: 1.5mm 3mm;
+  }
+  .key-changes-left .kc-title {
+    font-weight: bold;
+    color: var(--teal-dark);
+    font-size: 8.5pt;
+    margin-bottom: 1.5mm;
+  }
+  .kc-items {
+    display: flex;
+    gap: 6mm;
+  }
+  .kc-item { text-align: center; }
+  .kc-item .kc-label { font-size: 7.5pt; color: var(--text-grey); }
+  .kc-item .kc-arrow { font-size: 11pt; }
+  .kc-item .kc-arrow.up { color: var(--green); }
+  .kc-item .kc-arrow.down { color: var(--red); }
+  .kc-item .kc-arrow.flat { color: var(--orange); }
+
+  .rating-box {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .rating-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 1.2mm 3mm;
+    border-bottom: 1px solid var(--border-grey);
+    font-size: 8.5pt;
+  }
+  .rating-row:last-child { border-bottom: none; }
+  .rating-row .rlabel { color: var(--text-grey); font-weight: bold; }
+  .rating-row .rvalue { font-weight: bold; }
+  .hold-tag {
+    background: var(--border-grey);
+    text-align: center;
+    font-weight: bold;
+    font-size: 12pt;
+    letter-spacing: 0.5px;
+    min-width: 26mm;
+    padding: 0 3mm;
+    white-space: nowrap;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .stock-info-row {
+    display: flex;
+    align-items: stretch;
+    gap: 5mm;
+    margin-bottom: 1.5mm;
+  }
+  /* Flex-wrap "chips" rather than a <table>: a table's auto layout algorithm
+     refuses to shrink below its content's natural width and will overflow
+     into the adjacent HOLD tag instead of respecting the flex row's bounds.
+     Flex-wrap reflows onto a second line instead, which is always safe. */
+  .stock-info-table {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.5mm 4mm;
+    border: 1px solid var(--border-grey);
+    padding: 1.5mm 3mm;
+    margin-bottom: 0;
+    flex: 1;
+    min-width: 0;
+    font-size: 6.8pt;
+  }
+  .stock-info-item { white-space: nowrap; }
+  .stock-info-item .label { color: var(--text-grey); margin-right: 1mm; }
+  .stock-info-item .value { font-weight: bold; }
+
+  /* ---------- Headline ---------- */
+  .headline {
+    color: var(--teal-dark);
+    font-size: 12pt;
+    font-weight: bold;
+    margin: 3mm 0 2mm 0;
+  }
+
+  /* ---------- Two column layout page1 ----------
+     NOTE: deliberately a CSS table (not flexbox). WeasyPrint does not fragment
+     flex containers across page breaks correctly -- an overflowing flex item
+     dumps its entire content across N pages before the next item starts, instead
+     of both columns flowing side-by-side page-by-page like a table does. */
+  .two-col {
+    display: table;
+    width: 100%;
+  }
+  .col-left { display: table-cell; width: 62mm; vertical-align: top; padding-right: 5mm; }
+  .col-right { display: table-cell; vertical-align: top; }
+
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5mm;
+    font-size: 7.2pt;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .data-table tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .data-table caption {
+    background: var(--teal-dark);
+    color: #fff;
+    font-weight: bold;
+    text-align: left;
+    padding: 1.3mm 2mm;
+    caption-side: top;
+    font-size: 7.8pt;
+  }
+  .data-table th, .data-table td {
+    border: none;
+    border-bottom: 1px solid var(--border-grey);
+    padding: 0.5mm 2mm;
+    text-align: right;
+  }
+  .data-table th:first-child, .data-table td:first-child { text-align: left; }
+  .data-table thead th {
+    background: var(--teal-light);
+    font-weight: bold;
+    color: var(--text-dark);
+  }
+  .data-table tbody tr:nth-child(even) { background: var(--bg-stripe); }
+  .data-table tfoot td { font-weight: bold; border-top: 1px solid var(--text-dark); }
+
+  .company-para {
+    font-size: 8.3pt;
+    margin-bottom: 2mm;
+    color: var(--text-dark);
+  }
+  ul.bullets {
+    margin: 0 0 3mm 0;
+    padding-left: 4mm;
+  }
+  ul.bullets li {
+    margin-bottom: 1.5mm;
+    font-size: 8.3pt;
+  }
+
+  h3.section-head {
+    color: var(--teal-dark);
+    font-size: 10pt;
+    margin: 3mm 0 1.5mm 0;
+    font-weight: bold;
+  }
+
+  .outlook-text {
+    font-size: 8.3pt;
+    text-align: justify;
+    margin-bottom: 2mm;
+  }
+  .outlook-text b { color: var(--text-dark); }
+
+  .price-chart-img {
+    width: 100%;
+    height: 24mm;
+    object-fit: contain;
+    display: block;
+    border: 1px solid var(--border-grey);
+    margin-bottom: 2mm;
+  }
+
+  /* ---------- Page 2 charts grid ---------- */
+  .chart-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4mm;
+    margin: 2mm 0 4mm 0;
+  }
+  .chart-box {
+    border: 1px solid var(--border-grey);
+    padding: 2mm;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .chart-box .chart-title {
+    font-weight: bold;
+    color: var(--teal-dark);
+    font-size: 9pt;
+    margin-bottom: 1mm;
+  }
+  .chart-box img { width: 100%; height: 45mm; object-fit: contain; display: block; }
+
+  /* ---------- Financial statement pages ---------- */
+  .fin-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5mm;
+  }
+  .fin-block {
+    margin-bottom: 4mm;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .fin-block h4 {
+    background: var(--teal-dark);
+    color: #fff;
+    font-size: 8.5pt;
+    margin: 0 0 0 0;
+    padding: 1.3mm 2mm;
+  }
+  table.fin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 7.3pt;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  table.fin-table tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  table.fin-table th, table.fin-table td {
+    padding: 0.9mm 1.5mm;
+    border-bottom: 1px solid var(--border-grey);
+    text-align: right;
+  }
+  table.fin-table th:first-child, table.fin-table td:first-child { text-align: left; }
+  table.fin-table thead th {
+    background: var(--teal-light);
+    font-weight: bold;
+  }
+  table.fin-table tbody tr.bold-row td { font-weight: bold; }
+  table.fin-table tbody tr:nth-child(even) { background: var(--bg-stripe); }
+
+  /* ---------- Recommendation summary page ---------- */
+  .rec-summary-wrap {
+    display: flex;
+    gap: 5mm;
+    margin-bottom: 4mm;
+  }
+  .rec-chart { flex: 1.3; border: 1px solid var(--border-grey); padding: 2mm; }
+  .rec-chart img { width: 100%; height: 55mm; object-fit: contain; display: block; }
+  .rec-table { flex: 1; }
+
+  table.rec-table-el {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 7.8pt;
+  }
+  table.rec-table-el th {
+    background: var(--teal-dark);
+    color: #fff;
+    padding: 1.2mm 2mm;
+    text-align: left;
+  }
+  table.rec-table-el td {
+    padding: 1.2mm 2mm;
+    border-bottom: 1px solid var(--border-grey);
+  }
+  table.rec-table-el tbody tr:nth-child(even) { background: var(--bg-stripe); }
+
+  .rating-criteria-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 7.4pt;
+    margin: 2mm 0 4mm 0;
+  }
+  .rating-criteria-table th {
+    background: var(--teal-dark);
+    color: #fff;
+    padding: 1.2mm 2mm;
+    text-align: left;
+  }
+  .rating-criteria-table td {
+    padding: 1.2mm 2mm;
+    border: 1px solid var(--border-grey);
+  }
+
+  .legend-row {
+    display: flex;
+    gap: 8mm;
+    align-items: center;
+    font-size: 7.6pt;
+    margin-bottom: 3mm;
+  }
+  .legend-row .swatch {
+    display: inline-block;
+    width: 3mm;
+    height: 3mm;
+    border-radius: 50%;
+    margin-right: 1.5mm;
+    vertical-align: middle;
+  }
+  .swatch.upgrade { background: var(--green); }
+  .swatch.nochange { background: var(--orange); }
+  .swatch.downgrade { background: var(--red); }
+
+  /* ---------- Disclaimer page ---------- */
+  .disclaimer {
+    font-size: 6.3pt;
+    line-height: 1.5;
+    color: var(--text-grey);
+    text-align: justify;
+  }
+  .disclaimer h5 {
+    font-size: 7.2pt;
+    color: var(--text-dark);
+    margin: 2.5mm 0 1mm 0;
+  }
+  .disclaimer p { margin: 0 0 1.5mm 0; }
+  .disclaimer .cert-block { margin-bottom: 2mm; }
+  .disclaimer b { color: var(--text-dark); }
+
+  .signature-block {
+    display: flex;
+    justify-content: flex-end;
+    margin: 2mm 0;
+  }
+  .signature-block img { height: 12mm; }
+</style>
+
+<!-- ============================================================ -->
+<!-- PAGE 1 — Cover / Summary                                     -->
+<!-- ============================================================ -->
+<div class="page">
+  <div class="side-ribbon">
+    <svg viewBox="0 0 100 1000" xmlns="http://www.w3.org/2000/svg">
+      <text x="50" y="500" transform="rotate(-90 50 500)" text-anchor="middle" dominant-baseline="middle"
+            fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="bold"
+            letter-spacing="1">{{ report_tag | default("Q1FY26 Result Update") }}</text>
+    </svg>
+  </div>
+
+  <div class="brand-header">
+    <div class="title-block">
+      <h1>Retail Equity Research</h1>
+    </div>
+    <div class="brand-logo">
+      <img src="{{ logo_url }}" alt="{{ broker_name | default('Geojit') }}">
+      <div class="tagline">{{ broker_tagline | default('PEOPLE YOU PROSPER WITH') }}</div>
+    </div>
+  </div>
+
+  <div class="company-name-row">
+    <h2>{{ company_name }}</h2>
+  </div>
+
+  <div class="sector-row">
+    <div>Sector: {{ sector }}</div>
+    <div>{{ report_date }}</div>
+  </div>
+
+  <div class="key-changes-box">
+    <div class="key-changes-left">
+      <div class="kc-title">Key Changes</div>
+      <div class="kc-items">
+        <div class="kc-item">
+          <div class="kc-label">Target</div>
+          <div class="kc-arrow {{ target_change_dir | default('up') }}">
+            {{ '▲' if target_change_dir == 'up' else ('▼' if target_change_dir == 'down' else '●') }}
+          </div>
+        </div>
+        <div class="kc-item">
+          <div class="kc-label">Rating</div>
+          <div class="kc-arrow {{ rating_change_dir | default('down') }}">
+            {{ '▲' if rating_change_dir == 'up' else ('▼' if rating_change_dir == 'down' else '●') }}
+          </div>
+        </div>
+        <div class="kc-item">
+          <div class="kc-label">Earnings</div>
+          <div class="kc-arrow {{ earnings_change_dir | default('down') }}">
+            {{ '▲' if earnings_change_dir == 'up' else ('▼' if earnings_change_dir == 'down' else '●') }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="rating-box">
+      <div class="rating-row"><span class="rlabel">Target</span><span class="rvalue">Rs. {{ target_price | fmt }}</span></div>
+      <div class="rating-row"><span class="rlabel">CMP</span><span class="rvalue">Rs. {{ cmp | fmt }}</span></div>
+      <div class="rating-row"><span class="rlabel">Return</span><span class="rvalue">{% if return_pct is number %}{{ '+' if return_pct > 0 else '' }}{{ return_pct | fmt }}%{% else %}N/A{% endif %}</span></div>
+    </div>
+  </div>
+
+  <div class="stock-info-row">
+    <div class="stock-info-table">
+      <div class="stock-info-item"><span class="label">Stock Type</span><span class="value">{{ stock_type }}</span></div>
+      <div class="stock-info-item"><span class="label">Bloomberg Code</span><span class="value">{{ bloomberg_code }}</span></div>
+      <div class="stock-info-item"><span class="label">Sensex</span><span class="value">{{ sensex_value | fmt }}</span></div>
+      <div class="stock-info-item"><span class="label">NSE Code</span><span class="value">{{ nse_code }}</span></div>
+      <div class="stock-info-item"><span class="label">BSE Code</span><span class="value">{{ bse_code }}</span></div>
+      <div class="stock-info-item"><span class="label">Time Frame</span><span class="value">{{ time_frame }}</span></div>
+    </div>
+    <div class="hold-tag">{{ recommendation_rating }}</div>
+  </div>
+
+  <div class="two-col">
+    <!-- LEFT COLUMN: company data / shareholding / price performance / chart -->
+    <div class="col-left">
+      <table class="data-table">
+        <caption>Company Data</caption>
+        <tbody>
+          <tr><td>Market Cap (Rs.cr)</td><td>{{ market_cap | fmt }}</td></tr>
+          <tr><td>52 Week High — Low (Rs.)</td><td>{{ week52_high | fmt }} - {{ week52_low | fmt }}</td></tr>
+          <tr><td>Enterprise Value (Rs. cr)</td><td>{{ enterprise_value | fmt }}</td></tr>
+          <tr><td>Outstanding Shares (cr)</td><td>{{ outstanding_shares | fmt }}</td></tr>
+          <tr><td>Free Float (%)</td><td>{{ free_float | fmt }}</td></tr>
+          <tr><td>Dividend Yield (%)</td><td>{{ dividend_yield | default('-') | fmt }}</td></tr>
+          <tr><td>6m average volume (cr)</td><td>{{ avg_volume_6m | fmt }}</td></tr>
+          <tr><td>Beta</td><td>{{ beta | fmt }}</td></tr>
+          <tr><td>Face value (Rs.)</td><td>{{ face_value | fmt }}</td></tr>
+        </tbody>
+      </table>
+
+      <table class="data-table">
+        <caption>Shareholding (%)</caption>
+        <thead>
+          <tr><th></th>{% for q in shareholding_quarters %}<th>{{ q.label }}</th>{% endfor %}</tr>
+        </thead>
+        <tbody>
+          {% for row in shareholding_rows %}
+          <tr><td>{{ row.name }}</td>{% for v in row['values'] %}<td>{{ v | fmt }}</td>{% endfor %}</tr>
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr><td>Total</td>{% for v in shareholding_total %}<td>{{ v | fmt }}</td>{% endfor %}</tr>
+        </tfoot>
+      </table>
+      <table class="data-table">
+        <tr><td>Promoter Pledge</td>{% for v in promoter_pledge %}<td>{{ v | fmt }}</td>{% endfor %}</tr>
+      </table>
+
+      <table class="data-table">
+        <caption>Price Performance</caption>
+        <thead>
+          <tr><th></th><th>3 Month</th><th>6 Month</th><th>1 Year</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Absolute Return</td><td>{{ perf_absolute_3m | fmt }}</td><td>{{ perf_absolute_6m | fmt }}</td><td>{{ perf_absolute_1y | fmt }}</td></tr>
+          <tr><td>Absolute Sensex</td><td>{{ perf_sensex_3m | fmt }}</td><td>{{ perf_sensex_6m | fmt }}</td><td>{{ perf_sensex_1y | fmt }}</td></tr>
+          <tr><td>Relative Return</td><td>{{ perf_relative_3m | fmt }}</td><td>{{ perf_relative_6m | fmt }}</td><td>{{ perf_relative_1y | fmt }}</td></tr>
+        </tbody>
+      </table>
+      <div style="font-size:6.5pt; color:var(--text-grey); margin-bottom:1mm;">*over or under performance to benchmark index</div>
+
+      <img class="price-chart-img" src="{{ price_chart_img_url }}" alt="Price chart">
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Y.E March (cr)</th>{% for y in summary_years %}<th>{{ y }}</th>{% endfor %}</tr>
+        </thead>
+        <tbody>
+          {% for row in summary_financials_rows %}
+          <tr {% if row.bold %}class="bold-row"{% endif %}>
+            <td>{{ row.label }}</td>{% for v in row['values'] %}<td>{{ v | fmt }}</td>{% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- RIGHT COLUMN: narrative -->
+    <div class="col-right">
+      <div class="headline">{{ headline }}</div>
+      <p class="company-para">{{ company_description }}</p>
+      <ul class="bullets">
+        {% for bullet in summary_bullets %}
+        <li>{{ bullet }}</li>
+        {% endfor %}
+      </ul>
+
+      <h3 class="section-head">Outlook &amp; Valuation</h3>
+      <p class="outlook-text">{{ outlook_text | safe }}</p>
+
+      <h3 class="section-head">Quarterly Financials {{ financials_basis | default('Consolidated') }}</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Rs.cr</th><th>{{ q_current_label }}</th><th>{{ q_yoy_label }}</th><th>YoY Growth (%)</th>
+            <th>{{ q_qoq_label }}</th><th>QoQ Growth (%)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in quarterly_financials_rows %}
+          <tr {% if row.italic %}style="font-style:italic;"{% endif %}>
+            <td>{{ row.label }}</td><td>{{ row.current | fmt }}</td><td>{{ row.yoy | fmt }}</td>
+            <td>{{ row.yoy_growth | fmt }}</td><td>{{ row.qoq | fmt }}</td><td>{{ row.qoq_growth | fmt }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer-bar">{{ website_url | default('www.geojit.com') }}</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PAGE 2 — Key Highlights / Charts / Change in Estimates        -->
+<!-- ============================================================ -->
+<div class="page">
+  <h3 class="section-head">Key highlights</h3>
+  <ul class="bullets">
+    {% for point in key_highlights %}
+    <li>{{ point }}</li>
+    {% endfor %}
+  </ul>
+
+  <div class="chart-grid">
+    {% for chart in charts_row1 %}
+    <div class="chart-box">
+      <div class="chart-title">{{ chart.title }}</div>
+      <img src="{{ chart.img_url }}" alt="{{ chart.title }}">
+    </div>
+    {% endfor %}
+  </div>
+  <div class="chart-grid">
+    {% for chart in charts_row2 %}
+    <div class="chart-box">
+      <div class="chart-title">{{ chart.title }}</div>
+      <img src="{{ chart.img_url }}" alt="{{ chart.title }}">
+    </div>
+    {% endfor %}
+  </div>
+
+  <h3 class="section-head">Change in Estimates</h3>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th rowspan="2">Year / Rs cr</th>
+        <th colspan="2">Old estimates</th>
+        <th colspan="2">New estimates</th>
+        <th colspan="2">Change (%)</th>
+      </tr>
+      <tr>
+        <th>{{ est_year1 }}</th><th>{{ est_year2 }}</th>
+        <th>{{ est_year1 }}</th><th>{{ est_year2 }}</th>
+        <th>{{ est_year1 }}</th><th>{{ est_year2 }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in change_in_estimates_rows %}
+      <tr {% if row.italic %}style="font-style:italic;"{% endif %}>
+        <td>{{ row.label }}</td>
+        <td>{{ row.old_y1 | fmt }}</td><td>{{ row.old_y2 | fmt }}</td>
+        <td>{{ row.new_y1 | fmt }}</td><td>{{ row.new_y2 | fmt }}</td>
+        <td>{{ row.chg_y1 | fmt }}</td><td>{{ row.chg_y2 | fmt }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="footer-bar">{{ website_url | default('www.geojit.com') }}</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PAGE 3 — Consolidated Financials (P&L / BS / CF / Ratios)     -->
+<!-- ============================================================ -->
+<div class="page">
+  <h3 class="section-head">Consolidated Financials</h3>
+
+  <div class="fin-grid">
+    <div class="fin-block">
+      <h4>Profit &amp; Loss</h4>
+      <table class="fin-table">
+        <thead>
+          <tr><th>Y.E March (Rs. Cr)</th>{% for y in fin_years %}<th>{{ y }}</th>{% endfor %}</tr>
+        </thead>
+        <tbody>
+          {% for row in pnl_rows %}
+          <tr {% if row.bold %}class="bold-row"{% endif %} {% if row.italic %}style="font-style:italic;"{% endif %}>
+            <td>{{ row.label }}</td>{% for v in row['values'] %}<td>{{ v | fmt }}</td>{% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="fin-block">
+      <h4>Balance Sheet</h4>
+      <table class="fin-table">
+        <thead>
+          <tr><th>Y.E March (Rs. Cr)</th>{% for y in fin_years %}<th>{{ y }}</th>{% endfor %}</tr>
+        </thead>
+        <tbody>
+          {% for row in balance_sheet_rows %}
+          <tr {% if row.bold %}class="bold-row"{% endif %}>
+            <td>{{ row.label }}</td>{% for v in row['values'] %}<td>{{ v | fmt }}</td>{% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="fin-block">
+      <h4>Cashflow</h4>
+      <table class="fin-table">
+        <thead>
+          <tr><th>Y.E March</th>{% for y in fin_years %}<th>{{ y }}</th>{% endfor %}</tr>
+        </thead>
+        <tbody>
+          {% for row in cashflow_rows %}
+          <tr {% if row.bold %}class="bold-row"{% endif %}>
+            <td>{{ row.label }}</td>{% for v in row['values'] %}<td>{{ v | fmt }}</td>{% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="fin-block">
+      <h4>Ratio</h4>
+      <table class="fin-table">
+        <thead>
+          <tr><th>Y.E March</th>{% for y in fin_years %}<th>{{ y }}</th>{% endfor %}</tr>
+        </thead>
+        <tbody>
+          {% for row in ratio_rows %}
+          {% if row.is_header %}
+          <tr><td colspan="{{ fin_years | length + 1 }}" style="font-weight:bold; background:var(--teal-light);">{{ row.label }}</td></tr>
+          {% else %}
+          <tr>
+            <td>{{ row.label }}</td>{% for v in row['values'] %}<td>{{ v | fmt }}</td>{% endfor %}
+          </tr>
+          {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer-bar">{{ website_url | default('www.geojit.com') }}</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PAGE 4 — Recommendation Summary / Rating Criteria / Disclaimer-->
+<!-- ============================================================ -->
+<div class="page">
+  <h3 class="section-head">Recommendation Summary - (last 3 years)</h3>
+  <div class="rec-summary-wrap">
+    <div class="rec-chart">
+      <img src="{{ recommendation_chart_img_url }}" alt="Recommendation history chart">
+    </div>
+    <div class="rec-table">
+      <table class="rec-table-el">
+        <thead>
+          <tr><th>Dates</th><th>Rating</th><th>Target</th></tr>
+        </thead>
+        <tbody>
+          {% for row in recommendation_history %}
+          <tr><td>{{ row.date }}</td><td>{{ row.rating }}</td><td>{{ row.target | fmt }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h3 class="section-head">Investment Rating Criteria</h3>
+  <table class="rating-criteria-table">
+    <thead>
+      <tr><th>Ratings</th><th>Large caps</th><th>Midcaps</th><th>Small Caps</th></tr>
+    </thead>
+    <tbody>
+      {% for row in rating_criteria_rows %}
+      <tr>
+        <td>{{ row.rating }}</td><td>{{ row.large_cap }}</td><td>{{ row.mid_cap }}</td><td>{{ row.small_cap }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p style="font-size:7pt; margin:0 0 3mm 0;">
+    <b>Not rated/Neutral</b><br>
+    To satisfy regulatory requirements, we attribute 'Accumulate' as Buy and 'Reduce' as Sell.
+  </p>
+
+  <p style="font-size:7.2pt; text-align:justify; margin-bottom:3mm;">{{ rating_disclaimer_text }}</p>
+
+  <div class="legend-row">
+    <span><span class="swatch upgrade"></span>Upgrade</span>
+    <span><span class="swatch nochange"></span>No Change</span>
+    <span><span class="swatch downgrade"></span>Downgrade</span>
+  </div>
+
+  <div class="disclaimer">
+    <div class="cert-block">
+      <h5>DISCLAIMER &amp; DISCLOSURES</h5>
+      <p><b>Certification:</b> I, {{ analyst_name }}, author of this Report, hereby certify that all the views expressed in this research report reflect our personal views about any or all of the subject issuer or securities. This report has been prepared by the Research Team of {{ broker_full_name }}, hereinafter referred to as {{ broker_short_name }}.</p>
+      <p>For general disclosures and disclaimer: Please Click here</p>
+      <p>{{ research_support_disclaimer }}</p>
+    </div>
+
+    <h5>Regulatory Disclosures:</h5>
+    <p>{{ regulatory_disclosure_text | safe }}</p>
+
+    <p><b>1. Disclosures regarding Ownership:</b><br>{{ broker_short_name }} confirms that:<br>
+      (i) It/its associates have no financial interest or any other material conflict in relation to the subject company (ies) covered herein, at the time of publication of the research report.<br>
+      (ii) It/its associates have no actual beneficial ownership of 1% or more in relation to the subject company (ies) covered herein, at the end of the month immediately preceding the date of publication of the research report.<br>
+      Further, the Analyst confirms that:<br>
+      (i) He, his associates and his relatives shall take reasonable care to ensure that they do not have any financial interest in the subject company (ies) covered herein, and they have no other material conflict in the subject company, at the time of publication of the research report.<br>
+      (ii) He, his associates and his relatives have no actual/beneficial ownership of 1% or more in the subject company covered, at the end of the month immediately preceding the date of publication of the research report.</p>
+
+    <p><b>2. Disclosures regarding Compensation:</b><br>During the past 12 months, {{ broker_short_name }} or its Associates:<br>
+      (a) Have not received any compensation from the subject company; (b) Have not managed or co-managed public offering of securities for the subject company (c) Have not received any compensation for investment banking or merchant banking or brokerage services from the subject company. (d) Have not received any compensation for products or services other than investment banking or merchant banking or brokerage services from the subject company. (e) Have not received any compensation or other benefits from the subject company or third party in connection with the research report (f) The subject company is / was not a client during twelve months preceding the date of distribution of the research report.</p>
+
+    <p><b>3. Disclosure by {{ broker_short_name }} regarding the compensation paid to its Research Analyst:</b><br>{{ broker_short_name }} hereby confirms that no part of the compensation paid to the persons employed by it as Research Analysts is based on any specific brokerage services or transactions pertaining to trading in securities of companies contained in the Research Reports.</p>
+
+    <p><b>4. Disclosure regarding the Research Analyst's connection with the subject company:</b> It is affirmed that I, {{ analyst_name }}, Research Analyst (s) of {{ broker_short_name }} have not served as an officer, director or employee of the subject company.</p>
+
+    <p><b>5. Disclosure regarding Market Making activity:</b> Neither {{ broker_short_name }}/its Analysts have engaged in market making activities for the subject company.</p>
+
+    <p><b>6. Disclosure regarding conflict of interests:</b> {{ broker_short_name }} shall abide by the applicable regulations/ circulars/ directions specified by SEBI and Research Analyst Administration and Supervisory Body (RAASB) from time to time in relation to disclosure and mitigation of any actual or potential conflict of interest. {{ broker_short_name }} will endeavour to promptly inform the client of any conflict of interest that may affect the services being rendered to the client.</p>
+
+    <p><b>7.</b> "Registration granted by SEBI, membership of BASL (in case of IAs) and certification from NISM in no way guarantee performance of the intermediary or provide any assurance of returns to investors."</p>
+    <p><b>8.</b> Clients are required to keep contact details, including email id and mobile number/s updated with the {{ broker_short_name }} at all times.</p>
+    <p><b>9.</b> In the course of providing research services by {{ broker_short_name }}, {{ broker_short_name }} cannot execute/carry out any trade (purchase/sell transaction) on behalf of, the client. Thus, the clients are advised not to permit {{ broker_short_name }} to execute any trade on their behalf.</p>
+    <p><b>10.</b> {{ broker_short_name }} will never ask for the client's login credentials and OTPs for the client's Trading Account Demat Account and Bank Account. The Clients are advised not to share such information with anyone including {{ broker_short_name }}.</p>
+    <p><b>11. Standard Warning:</b> "Investment in securities market are subject to market risks. Read all the related documents carefully before investing."</p>
+    <p><b>12. Disclosures regarding Artificial Intelligence tools:</b> {{ ai_tools_disclosure }}</p>
+
+    <p>Please ensure that you have read the "Risk Disclosure Documents for Capital Market and Derivatives Segments" as prescribed by the Securities and Exchange Board of India before investing.</p>
+
+    <p>{{ broker_full_name }}. Registered Office: {{ registered_office }}. Phone: {{ broker_phone }}, Website: {{ website_url }}. For investor queries: {{ investor_email }}</p>
+
+    <div class="signature-block">
+      <img src="{{ signature_img_url }}" alt="Signature">
+    </div>
+
+    <h5>GRIEVANCES</h5>
+    <p><b>Step 1:</b> The client should first contact the RA using the details on its website or following contact details: Compliance officer: {{ compliance_officer_name }}. Address: {{ compliance_address }}; Phone: {{ compliance_phone }}; Email: {{ compliance_email }}. For Grievances: {{ grievances_email }}. <b>Step 2:</b> If the resolution is unsatisfactory, the client can also lodge grievances through SEBI's SCORES platform at {{ scores_url }}. <b>Step 3:</b> The client may also consider the Online Dispute Resolution (ODR) through the Smart ODR portal at {{ odr_url }}</p>
+
+    <p>Corporate Identity Number: {{ cin_number }}; Research Entity SEBI Reg No: {{ sebi_reg_no }}; Depository Participant: {{ dp_reg_no }}.</p>
+  </div>
+
+  <div class="footer-bar">{{ website_url | default('www.geojit.com') }}</div>
+</div>

@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip show *)",
+      "Bash(pip install *)",
+      "Bash(python render_report.py)",
+      "Bash(start report_preview.html)",
+      "Bash(python main.py)",
+      "Bash(cd \"c:\\\\Users\\\\joell\\\\Bull_Ai_JoellAlex\" && rm -f page_*.png ribbon_crop.png && ls)",
+      "Bash(python -c ' *)",
+      "Bash(python main.py test_inputs/nova_retail.txt --out test_inputs/nova_output.pdf --html-out test_inputs/nova_output.html)",
+      "Bash(python main.py test_inputs/aster_pharma.csv --out test_inputs/aster_output.pdf --html-out test_inputs/aster_output.html)",
+      "Bash(cd \"c:\\\\Users\\\\joell\\\\Bull_Ai_JoellAlex\" && rm -f test_inputs/hold_tag_crop.png test_inputs/hold_tag_crop2.png test_inputs/*_p1.png test_inputs/final_*.png && ls test_inputs)",
+      "Bash(curl -s -o test_inputs/ui_test_output.pdf -w \"HTTP %{http_code}\\\\n\" -F \"company_name=Nova Retail Ltd.\" -F \"context_file=@test_inputs/nova_retail.txt;type=text/plain\" http://127.0.0.1:5000/generate)",
+      "Bash(curl -s -i -F \"company_name=Test Co\" -F \"context_file=@test_inputs/bad.docx\" http://127.0.0.1:5000/generate)",
+      "Bash(curl -s -i -F \"context_file=@test_inputs/nova_retail.txt\" http://127.0.0.1:5000/generate)",
+      "Bash(curl -s -i -F \"company_name=Test Co\" http://127.0.0.1:5000/generate)",
+      "Bash(rm -f test_inputs/bad.docx test_inputs/ui_test_p1.png test_inputs/ui_test_output.pdf flask.log)",
+      "Bash(powershell -Command 'Get-Process python -ErrorAction SilentlyContinue | Where-Object {$_.MainWindowTitle -eq '\\\\'''\\\\''} | Stop-Process -Force')",
+      "Bash(tasklist)",
+      "Bash(netstat -ano)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" --max-time 2 http://127.0.0.1:5000/)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\joell\\Bull_Ai_JoellAlex",
+      "C:\\Users\\joell\\Bull_Ai_JoellAlex\\test_inputs"
+    ]
+  }
+}

@@ -1,0 +1,53 @@
+Nova Retail Ltd. -- Q1 FY26 Financial Summary
+
+Sector: Apparel & Lifestyle Retail
+Report Date: 15th July, 2025
+Rating: BUY
+Target Price: Rs. 890
+Current Market Price: Rs. 742
+Expected Return: 20%
+
+Headline: Store expansion and online mix drive margin recovery
+
+Company Overview:
+Nova Retail Ltd. is a multi-brand apparel and lifestyle retailer operating over
+420 stores across India, alongside a fast-growing direct-to-consumer online
+channel. The company sources and distributes both in-house and licensed brands.
+
+Key Highlights:
+- Consolidated revenue grew 24.6% YoY in Q1FY26 to Rs. 1,842cr, led by same-store
+  sales growth of 11.2% and 38 new store additions during the quarter.
+- Online channel revenue rose 41.3% YoY to Rs. 312cr, now 17% of total sales.
+- Gross margin expanded 180bps YoY to 52.4% on better full-price sell-through and
+  reduced discounting.
+- EBITDA margin improved to 14.1% from 11.8% in Q1FY25, aided by operating leverage.
+- Reported PAT rose 62% YoY to Rs. 94cr.
+- Net debt reduced to Rs. 210cr from Rs. 340cr a year ago on stronger operating
+  cash flow.
+
+Outlook & Valuation:
+Nova Retail's continued store rollout, improving online contribution, and margin
+discipline support a positive medium-term outlook. Given the recent re-rating in
+the sector, we maintain our BUY rating with a revised target price of Rs. 890,
+based on 28x FY27E EPS.
+
+Quarterly Financials (Consolidated, Rs. cr)
+Metric,Q1FY26,Q1FY25,YoY Growth (%),Q4FY25,QoQ Growth (%)
+Sales,1842,1478,24.6,1695,8.7
+EBITDA,260,174,49.4,232,12.1
+Margin (%),14.1,11.8,230bps,13.7,40bps
+EBIT,205,128,60.2,178,15.2
+PBT,188,110,70.9,162,16.0
+Reported PAT,94,58,62.1,80,17.5
+
+Quarterly Financial Summary (Y.E March)
+Year,Sales,Growth (%),EBITDA,EBITDA Margin (%),PAT Adjusted,Growth (%),Adjusted EPS,Growth (%),P/E,P/B,EV/EBITDA,ROE (%),D/E
+FY25A,6820,22.4,910,13.3,320,45.0,10.2,45.0,72.7,9.8,38.1,14.2,0.3
+FY26E,8450,23.9,1210,14.3,430,34.4,13.7,34.3,54.2,8.4,28.9,17.5,0.25
+FY27E,10380,22.8,1560,15.0,600,39.5,19.1,39.4,38.8,6.9,21.4,20.1,0.2
+
+Recommendation History
+Date,Rating,Target
+12-Aug-24,BUY,610
+20-Jan-25,BUY,720
+15-Jul-25,BUY,890

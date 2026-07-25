@@ -1,0 +1,7 @@
+python-dotenv
+pydantic
+google-genai
+Jinja2
+weasyprint
+flask
+matplotlib

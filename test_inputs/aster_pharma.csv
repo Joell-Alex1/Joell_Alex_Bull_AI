@@ -1,0 +1,46 @@
+section,field,value
+header,company_name,Aster Pharma Ltd.
+header,headline,Pipeline approvals and export growth underpin re-rating
+header,sector,Pharmaceuticals
+header,report_date,02nd August 2025
+header,rating,ACCUMULATE
+header,target_price,1420
+header,cmp,1265
+header,return_pct,12.3
+
+company_data,market_cap_cr,84210
+company_data,week_52_high,1480
+company_data,week_52_low,910
+company_data,enterprise_value_cr,86500
+company_data,outstanding_shares_cr,66.6
+company_data,free_float_pct,58.4
+company_data,dividend_yield_pct,0.8
+company_data,beta,0.7
+company_data,face_value,2
+
+quarterly,metric,q1fy26,q1fy25,yoy_growth_pct,q4fy25,qoq_growth_pct
+quarterly,Sales,2140,1780,20.2,2015,6.2
+quarterly,EBITDA,468,362,29.3,430,8.8
+quarterly,Margin (%),21.9,20.3,160bps,21.3,60bps
+quarterly,EBIT,392,296,32.4,358,9.5
+quarterly,PBT,376,278,35.3,340,10.6
+quarterly,Reported PAT,289,214,35.0,262,10.3
+
+key_metrics,year,sales,growth_pct,ebitda,ebitda_margin_pct,pat_adjusted,pat_growth_pct,adjusted_eps,eps_growth_pct,pe,pb,ev_ebitda,roe_pct,de_ratio
+key_metrics,FY25A,7920,18.1,1640,20.7,980,24.6,14.7,24.6,86.1,11.2,52.7,13.9,0.15
+key_metrics,FY26E,9350,18.1,2050,21.9,1250,27.6,18.8,27.9,67.3,9.6,42.2,16.4,0.12
+key_metrics,FY27E,11120,18.9,2540,22.8,1610,28.8,24.2,28.7,52.3,8.1,34.1,18.8,0.10
+
+business_summary,text,"Aster Pharma Ltd. is an integrated pharmaceutical company manufacturing formulations and active pharmaceutical ingredients (APIs) for domestic and export markets, with a growing presence in the US generics segment."
+
+key_bullets,1,"Consolidated revenue grew 20.2% YoY in Q1FY26 to Rs. 2,140cr, led by strong US generics and domestic branded formulations growth."
+key_bullets,2,"EBITDA margin expanded 160bps YoY to 21.9% on a richer product mix and operating leverage."
+key_bullets,3,"Received 3 new ANDA approvals from the USFDA during the quarter, taking cumulative approvals to 47."
+key_bullets,4,"Reported PAT rose 35.0% YoY to Rs. 289cr."
+
+outlook,text,"Aster Pharma's expanding US pipeline and steady domestic growth support continued earnings momentum. We maintain ACCUMULATE with a revised target price of Rs. 1,420, based on 18x FY27E P/E."
+
+recommendation_history,date,rating,target
+recommendation_history,05-Feb-25,BUY,1180
+recommendation_history,18-May-25,BUY,1320
+recommendation_history,02-Aug-25,ACCUMULATE,1420
