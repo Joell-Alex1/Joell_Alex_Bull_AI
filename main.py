@@ -19,7 +19,6 @@ def format_number(value):
 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_INPUT = os.path.join(BASE_DIR, "Eternal-Geojit.pdf")
 
 
 def generate_report(input_path: str, output_pdf: str, output_html: str, company_name_override: str = None) -> None:
@@ -46,7 +45,7 @@ def generate_report(input_path: str, output_pdf: str, output_html: str, company_
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate an equity research report PDF from a context document.")
-    parser.add_argument("input_path", nargs="?", default=DEFAULT_INPUT, help="Path to a PDF, TXT, or CSV context document")
+    parser.add_argument("input_path", help="Path to a PDF, TXT, or CSV context document")
     parser.add_argument("--out", default=os.path.join(BASE_DIR, "output_report.pdf"), help="Output PDF path")
     parser.add_argument("--html-out", default=os.path.join(BASE_DIR, "output_preview.html"), help="Output HTML preview path")
     parser.add_argument("--company-name", default=None, help="Override the extracted company name")

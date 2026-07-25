@@ -32,6 +32,15 @@ of a report (e.g. "Blinkit propels growth; valuation limits upside") -- it is a
 distinct editorial tagline, NOT the first sentence of the company/business
 description paragraph. Extract it separately from business_summary. If the
 source document has no such tagline (e.g. a plain CSV/TXT export), leave it null.
+
+Note on quarterly_financials: current_period must be THIS document's own most
+recent reported quarter -- read it from the document itself (e.g. a results
+presentation titled "Q2 FY26" has current_period "Q2FY26"), never assume a
+fixed label like "Q1FY26". prior_year_period is the same quarter one year
+earlier (e.g. "Q2FY25"), and prior_quarter_period is the immediately preceding
+quarter (e.g. "Q1FY26"). Every value must be placed under the period it
+actually belongs to -- do not shift a quarter's figures into a different
+period's column just because a template elsewhere used different labels.
 """
 
 

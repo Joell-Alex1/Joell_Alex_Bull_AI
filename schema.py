@@ -58,11 +58,23 @@ class KeyMetricsRow(BaseModel):
 
 
 class QuarterlyFinancialRow(BaseModel):
-    metric: str                # "Sales", "EBITDA", "Margin (%)", etc.
-    q1fy26: Optional[float] = None
-    q1fy25: Optional[float] = None
+    """One line item of a quarterly results comparison table.
+
+    Field names are deliberately period-agnostic (current/prior_year/prior_quarter)
+    rather than hardcoded fiscal-quarter labels like "q1fy26" -- a fixed label
+    only matches whichever company's reporting calendar it was modeled on, and
+    silently mismaps every other company's actual current quarter into the wrong
+    column. Each *_period field carries its own label (e.g. "Q2FY26") so the
+    template can render the real column headers instead of assuming one.
+    """
+    metric: str                            # "Sales", "EBITDA", "Margin (%)", etc.
+    current_period: Optional[str] = None   # e.g. "Q2FY26" -- the document's own latest reported quarter
+    current_value: Optional[float] = None
+    prior_year_period: Optional[str] = None    # e.g. "Q2FY25" -- same quarter, prior year
+    prior_year_value: Optional[float] = None
     yoy_growth_pct: Optional[float] = None
-    q4fy25: Optional[float] = None
+    prior_quarter_period: Optional[str] = None  # e.g. "Q1FY26" -- immediately preceding quarter
+    prior_quarter_value: Optional[float] = None
     qoq_growth_pct: Optional[float] = None
 
 

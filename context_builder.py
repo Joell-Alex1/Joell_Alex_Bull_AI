@@ -190,14 +190,29 @@ def _quarterly_financials_context(quarterly_financials) -> list[dict]:
     for row in quarterly_financials:
         rows.append({
             "label": row.metric,
-            "current": row.q1fy26 if row.q1fy26 is not None else "N/A",
-            "yoy": row.q1fy25 if row.q1fy25 is not None else "N/A",
+            "current": row.current_value if row.current_value is not None else "N/A",
+            "yoy": row.prior_year_value if row.prior_year_value is not None else "N/A",
             "yoy_growth": row.yoy_growth_pct if row.yoy_growth_pct is not None else "N/A",
-            "qoq": row.q4fy25 if row.q4fy25 is not None else "N/A",
+            "qoq": row.prior_quarter_value if row.prior_quarter_value is not None else "N/A",
             "qoq_growth": row.qoq_growth_pct if row.qoq_growth_pct is not None else "N/A",
             "italic": "margin" in row.metric.lower(),
         })
     return rows
+
+
+def _quarterly_period_labels(quarterly_financials) -> dict:
+    """Column headers for the quarterly table, read from the extracted data's own
+    period labels rather than assumed -- see QuarterlyFinancialRow's docstring.
+    Uses the first row that actually has labels; falls back to generic text
+    (never a specific quarter) if the LLM didn't extract any."""
+    for row in quarterly_financials:
+        if row.current_period or row.prior_year_period or row.prior_quarter_period:
+            return {
+                "q_current_label": row.current_period or "Current Qtr",
+                "q_yoy_label": row.prior_year_period or "Prior Year Qtr",
+                "q_qoq_label": row.prior_quarter_period or "Prior Qtr",
+            }
+    return {"q_current_label": "Current Qtr", "q_yoy_label": "Prior Year Qtr", "q_qoq_label": "Prior Qtr"}
 
 
 def _charts_context(charts, chart_img_urls: dict) -> dict:
@@ -268,9 +283,7 @@ def build_context(data: ReportData, chart_img_urls: dict = None) -> dict:
 
     # Quarterly financials
     context["financials_basis"] = "Consolidated"
-    context["q_current_label"] = "Q1FY26"  # could be derived from data if you extract period labels
-    context["q_yoy_label"] = "Q1FY25"
-    context["q_qoq_label"] = "Q4FY25"
+    context.update(_quarterly_period_labels(data.quarterly_financials))
     context["quarterly_financials_rows"] = _quarterly_financials_context(data.quarterly_financials)
 
     # Charts
